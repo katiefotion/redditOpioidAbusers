@@ -23,7 +23,7 @@ def stem_tokens(tokens, stemmer):
         stemmed.append(stemmer.stem(item))
     return stemmed
 
-def build_lsa_tfidf_matrix(train):
+def build_matrix(train):
     
     # Create term x document frequency matrix
     count_vect = CountVectorizer(tokenizer=tokenize, stop_words='english')
@@ -123,7 +123,7 @@ def classify(train, tfs_mat, count_vect, tfidf, svd, submission_text, threshold,
 def param_tune(threshold, partitioned_data, min_K, max_K):
     
     # Display table header
-    print('TFIDF + LSA Parameter Tuning Results for K in [' + str(min_K) + ', ' + str(max_K) + ']:')
+    print('LSA + TFIDF Parameter Tuning Results for K in [' + str(min_K) + ', ' + str(max_K) + ']:')
     print('________________________________________________________________')
     print('K\tAccuracy\tPrecision\tRecall\t\tF1 measure\tSensitivity\tSpecificity')
     

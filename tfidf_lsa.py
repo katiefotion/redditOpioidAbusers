@@ -22,7 +22,7 @@ def stem_tokens(tokens, stemmer):
         stemmed.append(stemmer.stem(item))
     return stemmed
 
-def build_tfidf_lsa_matrix(train):
+def build_matrix(train):
     
     # Create TFIDF matrix
     tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')

@@ -6,6 +6,8 @@ import tfidf as tfidf
 import lsa as lsa
 import tfidf_lsa as tfidf_lsa
 import lsa_tfidf as lsa_tfidf
+import plotGraph as plotGraph
+import redditCrawler as redditCrawler
 
 
 token_dict = {}
@@ -36,7 +38,7 @@ def preprocess():
 
 if __name__ == "__main__":
     
-    optimal_ks = [5, 12, 15, 40]
+    optimal_ks = [13, 111, 79, 45]    
     
     #############################################################
     #                    Data preprocessing                     #
@@ -109,8 +111,10 @@ if __name__ == "__main__":
                 
         elif menu_choice.startswith('2'):
             
-            print('____ was determined to be the best classifier based on highest F1-measure.')
-            print('The classification while crawling Reddit will be done with ____ with k = ' + optimal_ks[value])
+            print('')
+            print('LSA+TFIDF was determined to be the best classifier.')
+            print('The classification while crawling Reddit will be done with LSA+TFIDF with k = ' + str(optimal_ks[3]))
+            print('')
             
             # Call Neharika's crawl method here
             # within that method, call classify_new_submission(submission_text)
@@ -118,9 +122,14 @@ if __name__ == "__main__":
             # MAKE SURE TO TRACK HOW MANY SUBMISSIONS WERE CRAWLED AND CLASSIFIED AS OPIOID ABUSER
             # VERSUS THOSE THAT WERE NOT (will go in paper)
             
-        #elif menu_choice.startswith('3'):
+            [tfs_mat, count_vect, tfidf, svd] = lsa_tfidf.build_matrix(token_dict)
+            
+            redditCrawler.getData(token_dict, tfs_mat, count_vect, tfidf, svd, threshold, optimal_ks[3])
+            
+        elif menu_choice.startswith('3'):
             
             # Call network graphing method here
+            plotGraph.draw()
             
         elif menu_choice.startswith('4'):
             sys.exit(0)
