@@ -1,8 +1,3 @@
-'''
-Created on 06-May-2017
-
-@author: Neharika Mazumdar
-'''
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -19,11 +14,13 @@ def draw():
     plt.show()
 
 #adding nodes and edges to the graph    
-def addConnections(activeUsersList,usersDict,subR):
-    H.add_nodes_from(activeUsersList);
+def addConnections(usersDict):
+    H.add_nodes_from(list(usersDict.keys()));
     for key,value in usersDict.iteritems():
-        H.add_node(value)
-        H.add_edge(key, value)
+        commentUsersList=value
+        for item in commentUsersList:
+            H.add_node(item)
+            H.add_edge(key, item)
         
    
    

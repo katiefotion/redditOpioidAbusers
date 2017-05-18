@@ -1,8 +1,3 @@
-'''
-Created on 10-May-2017
-
-@author: Neharika Mazumdar
-'''
 my_user_agent="redditClassifierApp by /u/neharika27"
 my_client_id="hD5wpAwE4lkBGA"
 my_client_secret="2NmyHvQkqRYRxoSjfeXA0pz0K5k"

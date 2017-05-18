@@ -1,16 +1,14 @@
-'''
-Created on 10-May-2017
 
-@author: Neharika Mazumdar
-'''
 import plotGraph as plot
 import praw as p
 import redditCrawlerConstants as rc
-import lsa_tfidf
+import random_forest
+#from docutils.nodes import comment
 
-#Crawler function: retrievs subreddit and parses through the author names and the comments for each submssion within the subreddit
+#Crawler function: retrieves subreddits and parses through the author names and the comments for each submssion within the subreddit
 
-def getData(train, tfs_mat, count_vect, tfidf, svd, threshold, K):
+def getData(forest, count_vect, tfidf, svd):
+    
     reddit = p.Reddit(user_agent=rc.my_user_agent,
     client_id=rc.my_client_id,
     client_secret=rc.my_client_secret,
@@ -18,7 +16,6 @@ def getData(train, tfs_mat, count_vect, tfidf, svd, threshold, K):
     password=rc.password)
         
         
-    activeUsersList=[]
     usersDict={}
     classVar=1
     commentClassVar=1
@@ -36,15 +33,22 @@ def getData(train, tfs_mat, count_vect, tfidf, svd, threshold, K):
         for submission in subreddit.hot(limit=5):
             
             subText=submission.selftext
+            activeCommentUsersList=[]
             
-            #Katie's classsifer function call to classify the submission text
-            classVar = lsa_tfidf.classify(train, tfs_mat, count_vect, tfidf, svd, subText, threshold, K)
+            #Katie's classifer function call to classify the submission text
+            classVar = random_forest.classify_lsa_tfidf(forest, count_vect, tfidf, svd, subText)
             
             if(classVar==1):
                 
+                #Author of a submission is identified as an abuser
+                #The author name is retrieved for adding it as a node in network graphing
+                #every author from each submission, and across submissions is counted only once
+                
                 redditor1=submission.author
                 name=redditor1.name
-                activeUsersList.append(name)
+                
+                commentList=[]
+                usersDict[name]=commentList
                 
                 abuserCount += 1
                 
@@ -52,23 +56,31 @@ def getData(train, tfs_mat, count_vect, tfidf, svd, threshold, K):
                 for comment in submission.comments:
                     
                     #Katie's classifier function call to classify the comment text
-                    commentClassVar = lsa_tfidf.classify(train, tfs_mat, count_vect, tfidf, svd, comment.body, threshold, K)
+                    commentClassVar = random_forest.classify_lsa_tfidf(forest, count_vect, tfidf, svd, comment.body)
                     
                     if(commentClassVar==1):
-                        usersDict[name]=comment.author
+                        
+                        #the author of a comment of a submission is identified as an abuser
+                        #list of all classified comment authors are extracted to be added as nodes for network graphing
+                        #there is an edge between every classified submission author and all its corresponding classified comment authors
+                        
+                        usersDict.get(name).append(comment.author)
+                        
                         abuserCount += 1
                     
                     else:
                         nonuserCount += 1
-        
+                
+                
+                
             else:
                 nonuserCount += 1
         
-        plot.addConnections(activeUsersList,usersDict,subR)
-        
+    
+    plot.addConnections(usersDict)
+      
     print('')
     print('A total of ' + str(nonuserCount+abuserCount) + ' submissions and comments were crawled and ' + str(abuserCount) + ' were classified as opioid abusers')
     print('')
         
             
-              
